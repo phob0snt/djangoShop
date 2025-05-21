@@ -1,0 +1,74 @@
+{% extends 'catalog/base.html' %}
+
+{% block title %}{{ battery.brand }} {{ battery.type.name }} - Магазин батареек{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-8">
+                <h1 class="card-title">{{ battery.brand }} {{ battery.type.name }}</h1>
+                <p class="text-muted">Тип: {{ battery.type.name }}</p>
+                
+                <div class="mb-4">
+                    <h5>Технические характеристики:</h5>
+                    <ul class="list-unstyled">
+                        <li><strong>Емкость:</strong> {{ battery.capacity }} мАч</li>
+                        <li><strong>Перезаряжаемая:</strong> {% if battery.rechargeable %}Да{% else %}Нет{% endif %}</li>
+                        {% if battery.voltage %}
+                        <li><strong>Напряжение:</strong> {{ battery.voltage }} В</li>
+                        {% endif %}
+                        {% if battery.estimated_energy %}
+                        <li><strong>Расчетная энергия:</strong> {{ battery.estimated_energy|floatformat:2 }} Вт⋅ч</li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <div class="mb-4">
+                    <h5>Описание:</h5>
+                    <p>{{ battery.description|default:"Описание отсутствует" }}</p>
+                </div>
+
+                <div class="mb-4">
+                    <h5>Цены:</h5>
+                    <ul class="list-unstyled">
+                        <li><strong>Розничная цена:</strong> {{ battery.price }} ₽</li>
+                        {% if battery.small_wholesale_price %}
+                        <li><strong>Мелкий опт (от {{ battery.small_wholesale_quantity }} шт.):</strong> {{ battery.small_wholesale_price }} ₽</li>
+                        {% endif %}
+                        {% if battery.large_wholesale_price %}
+                        <li><strong>Крупный опт (от {{ battery.large_wholesale_quantity }} шт.):</strong> {{ battery.large_wholesale_price }} ₽</li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <div class="mb-4">
+                    <h5>Наличие:</h5>
+                    <p>На складе: {{ battery.stock }} шт.</p>
+                </div>
+
+                {% if can_edit %}
+                <div class="mb-4">
+                    <a href="{% url 'catalog:edit_battery' battery.pk %}" class="btn btn-primary">Редактировать</a>
+                </div>
+                {% endif %}
+
+                {% if can_order and battery.stock > 0 %}
+                <div class="mb-4">
+                    <form method="post" action="{% url 'catalog:add_to_cart' battery.pk %}" class="row g-3 align-items-center">
+                        {% csrf_token %}
+                        <div class="col-auto">
+                            <label for="quantity" class="form-label">Количество:</label>
+                            <input type="number" class="form-control" id="quantity" name="quantity" value="1" min="1" max="{{ battery.stock }}">
+                        </div>
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-success">Добавить в корзину</button>
+                        </div>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

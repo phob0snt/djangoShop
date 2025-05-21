@@ -1,0 +1,77 @@
+{% extends 'catalog/base.html' %}
+
+{% block title %}Корзина - Магазин батареек{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <h1 class="card-title mb-4">Корзина</h1>
+        
+        {% if cart.items.exists %}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Товар</th>
+                            <th>Количество</th>
+                            <th>Цена за ед.</th>
+                            <th>Итого</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in cart.items.all %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'catalog:battery_detail' item.battery.pk %}">
+                                    {{ item.battery.brand }} {{ item.battery.type.name }}
+                                </a>
+                            </td>
+                            <td>
+                                <form method="post" action="{% url 'catalog:update_cart_item' item.pk %}" class="row g-2 align-items-center">
+                                    {% csrf_token %}
+                                    <div class="col-auto">
+                                        <input type="number" class="form-control form-control-sm" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.battery.stock }}" style="width: 80px;">
+                                    </div>
+                                    <div class="col-auto">
+                                        <button type="submit" class="btn btn-sm btn-outline-primary">Обновить</button>
+                                    </div>
+                                </form>
+                            </td>
+                            <td>{{ item.battery.price }} ₽</td>
+                            <td>{{ item.total_price }} ₽</td>
+                            <td>
+                                <form method="post" action="{% url 'catalog:remove_from_cart' item.pk %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-danger">Удалить</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" class="text-end"><strong>Итого:</strong></td>
+                            <td><strong>{{ cart.total_price }} ₽</strong></td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            
+            {% if can_order %}
+            <div class="mt-4">
+                <form method="post" action="{% url 'catalog:create_order' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success">Оформить заказ</button>
+                </form>
+            </div>
+            {% endif %}
+        {% else %}
+            <div class="alert alert-info">
+                Ваша корзина пуста. <a href="{% url 'catalog:home' %}">Перейти к каталогу</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 

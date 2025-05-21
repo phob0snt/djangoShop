@@ -1,0 +1,31 @@
+{% extends "catalog/base.html" %}
+
+{% block title %}Создание партии товара{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">Создание партии товара</h2>
+    
+    <div class="card">
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="battery" class="form-label">Выберите товар:</label>
+                    <select name="battery" id="battery" class="form-select" required>
+                        <option value="">Выберите товар...</option>
+                        {% for battery in batteries %}
+                            <option value="{{ battery.id }}">{{ battery }} (Остаток: {{ battery.stock }} шт.)</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="quantity" class="form-label">Количество:</label>
+                    <input type="number" name="quantity" id="quantity" class="form-control" min="1" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Создать партию</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} 

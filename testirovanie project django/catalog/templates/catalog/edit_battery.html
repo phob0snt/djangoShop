@@ -1,0 +1,50 @@
+{% extends 'catalog/base.html' %}
+
+{% block title %}Редактирование {{ battery.brand }} {{ battery.type.name }} - Магазин батареек{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <h1 class="card-title mb-4">Редактирование товара</h1>
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="mb-3">
+                <label for="description" class="form-label">Описание</label>
+                <textarea class="form-control" id="description" name="description" rows="3">{{ battery.description }}</textarea>
+            </div>
+            
+            <div class="mb-3">
+                <label for="price" class="form-label">Розничная цена</label>
+                <input type="number" class="form-control" id="price" name="price" value="{{ battery.price }}" step="0.01" min="0" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="small_wholesale_price" class="form-label">Цена мелкого опта</label>
+                <input type="number" class="form-control" id="small_wholesale_price" name="small_wholesale_price" value="{{ battery.small_wholesale_price|default:'' }}" step="0.01" min="0">
+            </div>
+            
+            <div class="mb-3">
+                <label for="small_wholesale_quantity" class="form-label">Количество для мелкого опта</label>
+                <input type="number" class="form-control" id="small_wholesale_quantity" name="small_wholesale_quantity" value="{{ battery.small_wholesale_quantity|default:'' }}" min="1">
+            </div>
+            
+            <div class="mb-3">
+                <label for="large_wholesale_price" class="form-label">Цена крупного опта</label>
+                <input type="number" class="form-control" id="large_wholesale_price" name="large_wholesale_price" value="{{ battery.large_wholesale_price|default:'' }}" step="0.01" min="0">
+            </div>
+            
+            <div class="mb-3">
+                <label for="large_wholesale_quantity" class="form-label">Количество для крупного опта</label>
+                <input type="number" class="form-control" id="large_wholesale_quantity" name="large_wholesale_quantity" value="{{ battery.large_wholesale_quantity|default:'' }}" min="1">
+            </div>
+            
+            <div class="mb-3">
+                <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                <a href="{% url 'catalog:battery_detail' battery.pk %}" class="btn btn-secondary">Отмена</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,95 @@
+{% extends 'catalog/base.html' %}
+
+{% block title %}Каталог батареек{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1>Каталог батареек</h1>
+    </div>
+    <div class="col-md-4">
+        <form method="get" class="d-flex">
+            <input type="text" name="search" class="form-control me-2" placeholder="Поиск..." value="{{ search_query|default:'' }}">
+            <button type="submit" class="btn btn-primary">Поиск</button>
+        </form>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <form method="get" class="row g-3">
+                    <div class="col-md-3">
+                        <label for="type" class="form-label">Тип батарейки</label>
+                        <select name="type" id="type" class="form-select">
+                            <option value="">Все типы</option>
+                            {% for type in battery_types %}
+                            <option value="{{ type.id }}" {% if current_type == type.id|stringformat:"i" %}selected{% endif %}>
+                                {{ type.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="rechargeable" class="form-label">Перезаряжаемые</label>
+                        <select name="rechargeable" id="rechargeable" class="form-select">
+                            <option value="">Все</option>
+                            <option value="true" {% if current_rechargeable == 'true' %}selected{% endif %}>Да</option>
+                            <option value="false" {% if current_rechargeable == 'false' %}selected{% endif %}>Нет</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="sort" class="form-label">Сортировка</label>
+                        <select name="sort" id="sort" class="form-select">
+                            <option value="brand" {% if current_sort == 'brand' %}selected{% endif %}>По бренду</option>
+                            <option value="price" {% if current_sort == 'price' %}selected{% endif %}>По цене</option>
+                            <option value="capacity" {% if current_sort == 'capacity' %}selected{% endif %}>По ёмкости</option>
+                            <option value="voltage" {% if current_sort == 'voltage' %}selected{% endif %}>По напряжению</option>
+                            <option value="stock" {% if current_sort == 'stock' %}selected{% endif %}>По наличию</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="group_by" class="form-label">Группировка</label>
+                        <select name="group_by" id="group_by" class="form-select">
+                            <option value="">Без группировки</option>
+                            <option value="type" {% if current_group == 'type' %}selected{% endif %}>По типу</option>
+                            <option value="rechargeable" {% if current_group == 'rechargeable' %}selected{% endif %}>По перезаряжаемости</option>
+                            <option value="voltage" {% if current_group == 'voltage' %}selected{% endif %}>По напряжению</option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">Применить</button>
+                        <a href="{% url 'catalog:home' %}" class="btn btn-secondary">Сбросить</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for battery in batteries %}
+    <div class="col">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">{{ battery.brand }} {{ battery.type.name }}</h5>
+                <p class="card-text">
+                    <strong>Ёмкость:</strong> {{ battery.capacity }} мАч<br>
+                    <strong>Напряжение:</strong> {{ battery.voltage }} В<br>
+                    <strong>Цена:</strong> {{ battery.price }} ₽<br>
+                    <strong>Наличие:</strong> {{ battery.stock }} шт.
+                </p>
+                <a href="{% url 'catalog:battery_detail' battery.pk %}" class="btn btn-primary">Подробнее</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="alert alert-info">
+            Батарейки не найдены. Попробуйте изменить параметры поиска.
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %} 
