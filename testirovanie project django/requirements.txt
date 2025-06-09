@@ -1,6 +1,7 @@
 Django>=5.2
 gunicorn
-psycopg2-binary
 pytest
 flake8
-dj-database-url 
+dj-database-url
+mssql-django
+pyodbc
